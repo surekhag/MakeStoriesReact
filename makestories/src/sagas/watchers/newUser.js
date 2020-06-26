@@ -15,7 +15,7 @@ function* workerNewUserSaga({ userInfo }) {
   try {
     const response = yield signup(userInfo);
     console.log("response", response);
-    // console.log("in saga response", )
+    console.log("in saga response", response);
     if (response) {
       //Not saving password
       const {
@@ -54,7 +54,7 @@ export function* watchNewUserSaga() {
 }
 
 function* workerUpdateUserSaga({ userInfo }) {
-  console.log("in saga ", userInfo);
+  console.log("in sag workerUpdateUserSagaa ", userInfo);
   const { password, ...userWithoutPassword } = userInfo;
   console.log("pas ", password, " withour oass ", userWithoutPassword);
   try {

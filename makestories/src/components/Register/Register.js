@@ -25,7 +25,7 @@ import Container from "@material-ui/core/Container";
 import InputFields from "../../material-ui/FromComponents/InputFields";
 import { useToasts } from "react-toast-notifications";
 import { Formik, Form } from "formik";
-// import styles from "../../material-ui/styles/dashboardStyle";
+import { db, auth, fStore } from "../../services/Firebase/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateUser,
@@ -68,7 +68,7 @@ const Register = (props) => {
     photoURL,
   };
 
-  const [file, setFile] = useState(photoURL);
+  const [updatedImage, setUpdatedImage] = useState(photoURL);
   const currentUser = useSelector((state) => state.loginReducer.currentUser);
   const addUserError = useSelector((state) => state.userReducer.addUserError);
   const updateSuccess = useSelector(
@@ -89,7 +89,8 @@ const Register = (props) => {
         autoDismiss: true,
       });
       dispatch(clearUserMessages());
-      console.log("userForm ", userForm.current);
+      console.log("userForm ", updatedImage, updatedUser);
+      updatedUser.photoURL = updatedImage;
       setUser(updatedUser);
     }
   }, [updateSuccess, addToast]);
@@ -105,6 +106,7 @@ const Register = (props) => {
   }, [updateError, addToast, dispatch]);
 
   useEffect(() => {
+    // console.log("currentUser0", currentUser);
     if (currentUser && !userToUpdate) {
       setUser(currentUser);
       addToast("User has been registered successfully!", {
@@ -124,9 +126,43 @@ const Register = (props) => {
     }
   }, [addUserError, addToast, dispatch]);
 
+  async function getImageUrl(image) {
+    const uploadTask = fStore
+      .ref(`/images/${image.photoURL.name}`)
+      .put(image.photoURL);
+    let firebaseImage;
+    await uploadTask.on(
+      "state_changed",
+      (snapShot) => {
+        console.log(snapShot);
+      },
+      (err) => {
+        console.log(err);
+      },
+      () => {
+        fStore
+          .ref("images")
+          .child(image.photoURL.name)
+          .getDownloadURL()
+          .then((fireBaseUrl) => {
+            image.photoURL = fireBaseUrl;
+            console.log("inside save", image);
+            if (userToUpdate) {
+              dispatch(updateUser(image));
+              console.log("update user data no image info", updatedUser);
+              // setUpdatedUser
+              setUpdatedImage(fireBaseUrl);
+            } else {
+              dispatch(addNewUser(image));
+            }
+          });
+      }
+    );
+  }
+
   const submitFormValues = (values) => {
     console.log("submitted values", userToUpdate, values);
-
+    let imageUrl = null;
     if (userToUpdate) {
       setUpdatedUser(values);
       if (values.password && values.password.length < 8) {
@@ -145,10 +181,28 @@ const Register = (props) => {
         setUser(userToUpdate);
       } else {
         console.log("yes   data for update", finalValues);
-        dispatch(updateUser(finalValues));
+        // console.log(finalValues.photoURL, "ptoto");
+
+        if (finalValues.photoURL) {
+          console.log("yes   data for update with image ");
+          getImageUrl(finalValues);
+        } else {
+          console.log("yes   data for update with no  image ");
+          setUpdatedUser(values);
+          dispatch(updateUser(finalValues));
+        }
       }
     } else {
-      dispatch(addNewUser(values));
+      if (values.photoURL) {
+        console.log(" new user with image updates ");
+        imageUrl = getImageUrl(values);
+        console.log(imageUrl, "imageUrl");
+      } else {
+        console.log("New user with no image");
+        dispatch(addNewUser(values));
+      }
+
+      // dispatch(addNewUser(values));
     }
   };
 
@@ -207,29 +261,19 @@ const Register = (props) => {
                               <div>
                                 <input
                                   accept="image/*"
-                                  style={{ display: "none" }}
+                                  // style={{ display: "none" }}
                                   id="raised-button-file"
                                   type="file"
                                   name="photoURL"
                                   onChange={(event) => {
-                                    setFile(event.currentTarget.files[0]);
+                                    // setFile(event.currentTarget.files[0]);
                                     setFieldValue(
                                       "photoURL",
                                       event.currentTarget.files[0]
                                     );
                                   }}
                                 />
-
-                                <label htmlFor="raised-button-file">
-                                  <Button
-                                    variant="raised"
-                                    component="span"
-                                    color="primary"
-                                    className={classes.button}
-                                  >
-                                    Upload Image
-                                  </Button>
-                                </label>
+                                <img src={photoURL ? photoURL : null} />
 
                                 <ErrorMessage
                                   className={classes.colorRed}
@@ -237,13 +281,6 @@ const Register = (props) => {
                                   component="div"
                                 />
                               </div>
-                              {file ? (
-                                <img
-                                  className={classes.imageContainer}
-                                  src={URL.createObjectURL(file)}
-                                  alt=""
-                                />
-                              ) : null}
                             </div>
                           </GridContainer>
                         </CardBody>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import GridItem from "../../material-ui/Grid/GridItem";
 import GridContainer from "../../material-ui/Grid/GridContainer";
@@ -9,20 +9,35 @@ import CardBody from "../../material-ui/Card/CardBody";
 import Table from "../../material-ui/Table/Table";
 import styles from "../../material-ui/styles/dashboardStyle";
 import { Redirect } from "react-router-dom";
-import { setCurrentUserData } from "../../actions/userActions";
-import { useDispatch } from "react-redux";
+import { signOutFromSite } from "../../actions/userActions";
+import { useDispatch, useSelector } from "react-redux";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import defaultImage from "../../assets/images/default-user-image.png";
+import { clearMessages } from "../../actions/userActions";
+
+import { useToasts } from "react-toast-notifications";
 const useStyles = makeStyles(styles);
 
 const Home = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
+  const signOut = useSelector((state) => state.loginReducer.signOutSuccess);
   const data = props.location.state.data;
   console.log("inside home", data);
   const [redirect, setRedirect] = useState(false);
   const [user, setUser] = useState(null);
+  const { addToast } = useToasts();
+  useEffect(() => {
+    if (signOut) {
+      addToast(signOut, {
+        appearance: "success",
+        autoDismiss: true,
+      });
+      dispatch(clearMessages());
+      setRedirect(true);
+    }
+  }, [signOut, dispatch]);
   const {
     firstName,
     lastName,
@@ -51,8 +66,8 @@ const Home = (props) => {
     setUser(data);
   };
   const logout = () => {
-    dispatch(setCurrentUserData(null));
-    setRedirect(true);
+    console.log("click log");
+    dispatch(signOutFromSite());
   };
   return (
     <>
@@ -73,7 +88,8 @@ const Home = (props) => {
                   <img
                     className={classes.imageContainer}
                     src={
-                      photoURL ? URL.createObjectURL(photoURL) : defaultImage
+                      // photoURL ? URL.createObjectURL(photoURL) : defaultImage
+                      photoURL ? photoURL : defaultImage
                     }
                     alt=""
                   />

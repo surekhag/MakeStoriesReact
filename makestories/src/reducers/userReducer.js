@@ -30,6 +30,7 @@ const userReducer = (state = initialState, action) => {
         ...state,
         updateUserError: action.message,
       };
+
     case CLEAR_USER_MESSAGE:
       return {
         ...state,

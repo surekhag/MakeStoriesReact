@@ -1,24 +1,14 @@
 import {
   CURRENT_USER,
-  ADD_NEW_USER,
-  UPDATE_USER,
   CLEAR_MESSAGE,
   SIGNIN_ERROR,
+  SIGN_OUT_SUCCESS,
 } from "../actions/actionTypes";
 const initialState = {
-  // users: [
-  //   {
-  //     firstName: "surekha",
-  //     lastName: "Gadkari",
-  //     username: "surekhag",
-  //     password: "12345678",
-  //     contact_number: "7894561230",
-  //     email: "mails.surekhag@gmail.com",
-  //   },
-  // ],
   error: "null",
   currentUser: null,
   loginError: null,
+  signOutSuccess: null,
 };
 
 const loginReducer = (state = initialState, action) => {
@@ -35,10 +25,17 @@ const loginReducer = (state = initialState, action) => {
         ...state,
         loginError: action.message,
       };
+    case SIGN_OUT_SUCCESS:
+      return {
+        ...state,
+        signOutSuccess: action.message,
+      };
+
     case CLEAR_MESSAGE:
       return {
         ...state,
         loginError: null,
+        signOutSuccess: null,
       };
 
     default:

@@ -9,6 +9,8 @@ import {
   CLEAR_USER_MESSAGE,
   UPDATE_USER_SUCCESS,
   UPDATE_USER_ERROR,
+  SIGN_OUT,
+  SIGN_OUT_SUCCESS,
 } from "./actionTypes";
 
 export function addNewUser(userInfo) {
@@ -19,6 +21,11 @@ export function addNewUser(userInfo) {
   };
 }
 
+export const signOutFromSite = () => {
+  return {
+    type: SIGN_OUT,
+  };
+};
 export function loginToSite(userInfo) {
   return {
     type: SIGNIN,
@@ -66,6 +73,13 @@ export function updateUser(userInfo) {
 export function updateUserSuccess({ message }) {
   return {
     type: UPDATE_USER_SUCCESS,
+    message,
+  };
+}
+
+export function SignOutSuccess({ message }) {
+  return {
+    type: SIGN_OUT_SUCCESS,
     message,
   };
 }

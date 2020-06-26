@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
 import { loginToSite, clearMessages } from "../../actions/userActions";
+import { db, auth } from "../../services/Firebase/firebase";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -38,13 +39,29 @@ const SignIn = (props) => {
   const loginError = useSelector((state) => state.loginReducer.loginError);
   const { addToast } = useToasts();
 
+  // useEffect(() => {});
   useEffect(() => {
     if (currentUserData) {
-      addToast("Logged In Suceessfully !", {
-        appearance: "success",
-        autoDismiss: true,
-      });
-      setCurrentUser(currentUserData);
+      if (Object.keys(currentUserData).length > 2) {
+        addToast("Logged In Suceessfully !", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+        setCurrentUser(currentUserData);
+      }
+      if (Object.keys(currentUserData).length == 2) {
+        const user = auth.currentUser;
+        const userRef = db.ref("/users/" + user.uid);
+        userRef.on("value", (snapshot) => {
+          const data = snapshot.val();
+          const final = { ...data, ...currentUserData };
+          console.log(final);
+
+          setCurrentUser({ ...data, ...currentUserData });
+        });
+      }
+
+      // setCurrentUser(currentUserData);
     }
   }, [currentUserData, addToast, dispatch]);
 
