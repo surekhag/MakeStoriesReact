@@ -273,13 +273,13 @@ const Register = (props) => {
                                     );
                                   }}
                                 />
-                                <img src={photoURL ? photoURL : null} />
+                                {/* <img src={photoURL ? photoURL : null} /> */}
 
-                                <ErrorMessage
+                                {/* <ErrorMessage
                                   className={classes.colorRed}
                                   name={"photoURL"}
                                   component="div"
-                                />
+                                /> */}
                               </div>
                             </div>
                           </GridContainer>
@@ -317,7 +317,7 @@ const Register = (props) => {
                                     variant="contained"
                                     disabled={isSubmitting}
                                   >
-                                    ADD USER
+                                    SIGN UP
                                   </Button>
                                   <div>
                                     Already have an account ? &nbsp;

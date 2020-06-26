@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
 import signInSignUp from "../../material-ui/styles/signInSignUp";
 import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -10,29 +9,22 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useDispatch, useSelector } from "react-redux";
+
+import GridItem from "../../material-ui/Grid/GridItem";
+import GridContainer from "../../material-ui/Grid/GridContainer";
+import InputFields from "../../material-ui/FromComponents/InputFields";
 import { Link, Redirect } from "react-router-dom";
 import Copyright from "../Copyright/copyright";
 import { useToasts } from "react-toast-notifications";
 import { loginToSite, clearMessages } from "../../actions/userActions";
 import { db, auth } from "../../services/Firebase/firebase";
-// function Copyright() {
-//   return (
-//     <Typography variant="body2" color="textSecondary" align="center">
-//       {"Copyright © "}
-//       <a color="inherit" href="https://makestories.io" target="blank">
-//         Make Stories
-//       </a>
-//       {new Date().getFullYear()}
-//     </Typography>
-//   );
-// }
+import { initialValues, userInputList, dataValidation } from "./formValues";
+import { Formik, Form } from "formik";
 const useStyles = makeStyles((theme) => signInSignUp(theme));
 
 const SignIn = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [email, setemail] = useState("");
-  const [password, setpassword] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
   const currentUserData = useSelector(
     (state) => state.loginReducer.currentUser
@@ -40,7 +32,6 @@ const SignIn = (props) => {
   const loginError = useSelector((state) => state.loginReducer.loginError);
   const { addToast } = useToasts();
 
-  // useEffect(() => {});
   useEffect(() => {
     if (currentUserData) {
       if (Object.keys(currentUserData).length > 2) {
@@ -50,19 +41,14 @@ const SignIn = (props) => {
         });
         setCurrentUser(currentUserData);
       }
-      if (Object.keys(currentUserData).length == 2) {
+      if (Object.keys(currentUserData).length === 2) {
         const user = auth.currentUser;
         const userRef = db.ref("/users/" + user.uid);
         userRef.on("value", (snapshot) => {
           const data = snapshot.val();
-          const final = { ...data, ...currentUserData };
-          console.log(final);
-
           setCurrentUser({ ...data, ...currentUserData });
         });
       }
-
-      // setCurrentUser(currentUserData);
     }
   }, [currentUserData, addToast, dispatch]);
 
@@ -76,17 +62,9 @@ const SignIn = (props) => {
     }
   }, [loginError, addToast, dispatch]);
 
-  const handleSubmitForm = (e) => {
-    e.preventDefault();
-
-    //to do validations
-
-    if (email && password) {
-      const userInfo = { email, password };
-      dispatch(loginToSite(userInfo));
-    }
+  const submitFormValues = (values) => {
+    dispatch(loginToSite(values));
   };
-
   return (
     <>
       {currentUser ? (
@@ -106,55 +84,49 @@ const SignIn = (props) => {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-
-            <form
-              className={classes.form}
-              noValidate
-              onSubmit={handleSubmitForm}
+            <Formik
+              initialValues={initialValues}
+              onSubmit={(values, { setSubmitting }) => {
+                submitFormValues(values);
+                setSubmitting(false);
+              }}
+              validationSchema={dataValidation}
             >
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required={true}
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                autoFocus
-                onChange={(event) => {
-                  setemail(event.target.value);
-                }}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required={true}
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={(event) => {
-                  setpassword(event.target.value);
-                }}
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                disabled={!email || !password}
-              >
-                Sign In
-              </Button>
-              <div className={classes.alignLink}>
-                Don't have an Account? <Link to="/register">Sign Up</Link>
-              </div>
-            </form>
+              {({
+                isSubmitting,
+                values,
+
+                handleChange,
+              }) => (
+                <Form className={classes.form}>
+                  <GridItem xs={12} sm={12} md={12}>
+                    <GridContainer>
+                      <InputFields
+                        inputList={userInputList}
+                        values={values}
+                        handleChange={handleChange}
+                      />
+                    </GridContainer>
+                  </GridItem>
+
+                  <div className={classes.signinButton}>
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      className={classes.submit}
+                      disabled={isSubmitting}
+                    >
+                      Sign In
+                    </Button>
+                  </div>
+                  <div className={classes.alignLink}>
+                    Don't have an Account? <Link to="/register">Sign Up</Link>
+                  </div>
+                </Form>
+              )}
+            </Formik>
           </div>
           <Box mt={8}>
             <Copyright />

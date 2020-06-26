@@ -19,6 +19,9 @@ const signInSignUp = (theme) => ({
   alignLink: {
     textAlign: "center",
   },
+  signinButton: {
+    margin: "0 15px",
+  },
   imageContainer: {
     width: "100px",
     height: "100px",
