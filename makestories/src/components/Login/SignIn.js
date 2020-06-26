@@ -122,7 +122,10 @@ const SignIn = (props) => {
                     </Button>
                   </div>
                   <div className={classes.alignLink}>
-                    Don't have an Account? <Link to="/register">Sign Up</Link>
+                    Don't have an Account?{" "}
+                    <Link className={classes.handleAnchor} to="/register">
+                      Sign Up
+                    </Link>
                   </div>
                 </Form>
               )}

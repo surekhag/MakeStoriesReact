@@ -18,6 +18,11 @@ const signInSignUp = (theme) => ({
   },
   alignLink: {
     textAlign: "center",
+    margin: "15px 0 0 0",
+  },
+  handleAnchor: {
+    textDecoration: "none",
+    "&:hover": { textDecoration: "underline" },
   },
   signinButton: {
     margin: "0 15px",
@@ -32,6 +37,7 @@ const signInSignUp = (theme) => ({
     marginTop: "27px",
     paddingLeft: "15px",
     display: "flex",
+    alignItems: "center",
   },
   colorRed: {
     paddingTop: "10px",

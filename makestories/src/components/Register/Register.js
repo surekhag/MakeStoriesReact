@@ -231,7 +231,7 @@ const Register = (props) => {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              {userToUpdate ? "Update User" : "Add User"}
+              {userToUpdate ? "Update User" : "Sign Up"}
             </Typography>
             <GridContainer>
               <Formik
@@ -319,9 +319,14 @@ const Register = (props) => {
                                   >
                                     SIGN UP
                                   </Button>
-                                  <div>
+                                  <div className={classes.alignLink}>
                                     Already have an account ? &nbsp;
-                                    <Link to="/login">Sign In</Link>
+                                    <Link
+                                      className={classes.handleAnchor}
+                                      to="/login"
+                                    >
+                                      Sign In
+                                    </Link>
                                   </div>
                                 </div>
                               </GridItem>
