@@ -11,20 +11,21 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
+import Copyright from "../Copyright/copyright";
 import { useToasts } from "react-toast-notifications";
 import { loginToSite, clearMessages } from "../../actions/userActions";
 import { db, auth } from "../../services/Firebase/firebase";
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://makestories.io">
-        Make Stories
-      </Link>
-      {new Date().getFullYear()}
-    </Typography>
-  );
-}
+// function Copyright() {
+//   return (
+//     <Typography variant="body2" color="textSecondary" align="center">
+//       {"Copyright © "}
+//       <a color="inherit" href="https://makestories.io" target="blank">
+//         Make Stories
+//       </a>
+//       {new Date().getFullYear()}
+//     </Typography>
+//   );
+// }
 const useStyles = makeStyles((theme) => signInSignUp(theme));
 
 const SignIn = (props) => {

@@ -10,6 +10,7 @@ import {
   signup,
   updateDetails,
   doPasswordUpdate,
+  doEmailUpdate,
 } from "../../firebaseFunctions/firebaseFunctions";
 function* workerNewUserSaga({ userInfo }) {
   try {
@@ -55,14 +56,16 @@ export function* watchNewUserSaga() {
 
 function* workerUpdateUserSaga({ userInfo }) {
   console.log("in sag workerUpdateUserSagaa ", userInfo);
-  const { password, ...userWithoutPassword } = userInfo;
+  const { password, email, ...userWithoutPassword } = userInfo;
   console.log("pas ", password, " withour oass ", userWithoutPassword);
   try {
     yield updateDetails(userWithoutPassword);
     if (password) {
       yield doPasswordUpdate(password);
     }
-
+    if (email) {
+      yield doEmailUpdate(email);
+    }
     yield put(
       updateUserSuccess({ message: "User info has been updated successfully" })
     );
