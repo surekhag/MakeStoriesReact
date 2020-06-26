@@ -22,6 +22,7 @@ const initialState = {
 };
 
 const loginReducer = (state = initialState, action) => {
+  console.log(action);
   switch (action.type) {
     case CURRENT_USER:
       return {

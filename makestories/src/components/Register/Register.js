@@ -42,7 +42,7 @@ const Register = (props) => {
   const { addToast } = useToasts();
   const dispatch = useDispatch();
   const [user, setUser] = useState(null);
-
+  const [updatedUser, setUpdatedUser] = useState(null);
   let { userToUpdate } = props.location.state || {};
 
   let initialValues;
@@ -71,11 +71,38 @@ const Register = (props) => {
   const [file, setFile] = useState(photoURL);
   const currentUser = useSelector((state) => state.loginReducer.currentUser);
   const addUserError = useSelector((state) => state.userReducer.addUserError);
+  const updateSuccess = useSelector(
+    (state) => state.userReducer.updateUserSuccess
+  );
+  const updateError = useSelector((state) => state.userReducer.updateUserError);
   const userForm = useRef(null);
 
   useEffect(() => {
     if (!userToUpdate) dispatch(setCurrentUserData());
   }, []);
+
+  useEffect(() => {
+    if (updateSuccess && userToUpdate) {
+      // setUser(updateSuccess);
+      addToast(updateSuccess, {
+        appearance: "success",
+        autoDismiss: true,
+      });
+      dispatch(clearUserMessages());
+      console.log("userForm ", userForm.current);
+      setUser(updatedUser);
+    }
+  }, [updateSuccess, addToast]);
+
+  useEffect(() => {
+    if (updateError) {
+      addToast(updateError, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+      dispatch(clearUserMessages());
+    }
+  }, [updateError, addToast, dispatch]);
 
   useEffect(() => {
     if (currentUser && !userToUpdate) {
@@ -98,7 +125,10 @@ const Register = (props) => {
   }, [addUserError, addToast, dispatch]);
 
   const submitFormValues = (values) => {
+    console.log("submitted values", userToUpdate, values);
+
     if (userToUpdate) {
+      setUpdatedUser(values);
       if (values.password && values.password.length < 8) {
         addToast("Password must be at least 8 characters long!", {
           appearance: "error",
@@ -106,15 +136,16 @@ const Register = (props) => {
         });
         return false;
       }
-
+      console.log("here above keyys");
       const finalValues = getFinalDataForUpdate(values, userToUpdate);
-
-      if (finalValues) {
-        console.log("yes   data for update", finalValues);
-        dispatch(updateUser(finalValues));
-      } else {
+      const val = Object.keys(finalValues).length === 0;
+      console.log("obj empty", val);
+      if (val) {
         console.log("updatedata");
         setUser(userToUpdate);
+      } else {
+        console.log("yes   data for update", finalValues);
+        dispatch(updateUser(finalValues));
       }
     } else {
       dispatch(addNewUser(values));
@@ -127,12 +158,8 @@ const Register = (props) => {
     }
   };
 
-  const dataValidation = userToUpdate
-    ? creatNewValidations
-    : {
-        creatNewValidations,
-        ...updateValidations,
-      };
+  const dataValidation = userToUpdate ? updateValidations : creatNewValidations;
+
   return (
     <>
       {user ? (

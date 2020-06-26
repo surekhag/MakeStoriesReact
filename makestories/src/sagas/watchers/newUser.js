@@ -1,12 +1,21 @@
 import { put, takeLatest, call } from "redux-saga/effects";
-import { ADD_NEW_USER } from "../../actions/actionTypes";
-import { setCurrentUserData, addUserError } from "../../actions/userActions";
-import { signup } from "../../firebaseFunctions/firebaseFunctions";
+import { ADD_NEW_USER, UPDATE_USER } from "../../actions/actionTypes";
+import {
+  setCurrentUserData,
+  addUserError,
+  updateUserSuccess,
+  updateUserError,
+} from "../../actions/userActions";
+import {
+  signup,
+  updateDetails,
+  doPasswordUpdate,
+} from "../../firebaseFunctions/firebaseFunctions";
 function* workerNewUserSaga({ userInfo }) {
   try {
     const response = yield signup(userInfo);
     console.log("response", response);
-
+    // console.log("in saga response", )
     if (response) {
       //Not saving password
       const {
@@ -22,7 +31,6 @@ function* workerNewUserSaga({ userInfo }) {
       yield put(
         setCurrentUserData({
           email,
-          //   password,
           phoneNumber,
           photoURL,
           uid,
@@ -34,6 +42,7 @@ function* workerNewUserSaga({ userInfo }) {
       );
     }
   } catch (e) {
+    console.log("in saga err");
     if (e.message) {
       yield put(addUserError(e.message));
     }
@@ -42,4 +51,27 @@ function* workerNewUserSaga({ userInfo }) {
 
 export function* watchNewUserSaga() {
   yield takeLatest(ADD_NEW_USER, workerNewUserSaga);
+}
+
+function* workerUpdateUserSaga({ userInfo }) {
+  console.log("in saga ", userInfo);
+  const { password, ...userWithoutPassword } = userInfo;
+  console.log("pas ", password, " withour oass ", userWithoutPassword);
+  try {
+    yield updateDetails(userWithoutPassword);
+    if (password) {
+      yield doPasswordUpdate(password);
+    }
+
+    yield put(
+      updateUserSuccess({ message: "User info has been updated successfully" })
+    );
+  } catch (e) {
+    if (e.message) {
+      yield put(updateUserError(e.message));
+    }
+  }
+}
+export function* watchUpdateUserSaga() {
+  yield takeLatest(UPDATE_USER, workerUpdateUserSaga);
 }

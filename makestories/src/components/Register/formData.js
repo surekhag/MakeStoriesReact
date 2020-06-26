@@ -8,12 +8,9 @@ const yupRequiredNumber = (text) => {
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/; // for Mobile Numbers
 
+// export const updateValidations = Yup.object().shape({
+
 export const updateValidations = Yup.object().shape({
-  password: yupRequired("Password")
-    .min(8, "Password must be at least 8 characters long!")
-    .max(50, "Too Long!"),
-});
-export const creatNewValidations = Yup.object().shape({
   firstName: yupRequired("First Name")
     .min(2, "First Name must be at least 2 characters long!")
     .max(50, "Too Long!"),
@@ -24,6 +21,34 @@ export const creatNewValidations = Yup.object().shape({
     .typeError("Age must be a number")
     .test("", "Enter age above 17", function (value) {
       return value > 17;
+    }),
+  email: yupRequired("Email").email("Invalid email"),
+  phoneNumber: yupRequired("Contact number")
+    .length(10, "Please enter a valid contact number.")
+    .matches(phoneRegExp, "Please enter a valid contact number."),
+  address: yupRequired("Address")
+    .min(2, "Address must be at least 2 characters long!")
+    .max(50, "Too Long!"),
+  // photoURL: yupRequired("Photo URL"),
+});
+
+export const creatNewValidations = Yup.object().shape({
+  password: yupRequired("Password")
+    .min(8, "Password must be at least 8 characters long!")
+    .max(50, "Too Long!"),
+  firstName: yupRequired("First Name")
+    .min(2, "First Name must be at least 2 characters long!")
+    .max(50, "Too Long!"),
+  lastName: yupRequired("Last Name")
+    .min(2, "Last Name must be at least 2 characters long!")
+    .max(50, "Too Long!"),
+  age: yupRequiredNumber("Age")
+    .typeError("Age must be a number")
+    .test("", "Enter age above 17", function (value) {
+      return value > 17;
+    })
+    .test("", "Enter age below 100", function (value) {
+      return value < 100;
     }),
   email: yupRequired("Email").email("Invalid email"),
   phoneNumber: yupRequired("Contact number")
@@ -80,7 +105,7 @@ export const getFinalDataForUpdate = (values, userToUpdate) => {
     finalValues.email = values.email;
   }
   if (values.phoneNumber !== phoneNumber) {
-    finalValues.phoneNumber = values.phoneNumbe;
+    finalValues.phoneNumber = values.phoneNumber;
   }
 
   if (values.age !== age) {

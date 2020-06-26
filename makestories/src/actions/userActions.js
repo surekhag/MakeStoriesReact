@@ -7,6 +7,8 @@ import {
   SIGNIN_ERROR,
   ADD_USER_ERROR,
   CLEAR_USER_MESSAGE,
+  UPDATE_USER_SUCCESS,
+  UPDATE_USER_ERROR,
 } from "./actionTypes";
 
 export function addNewUser(userInfo) {
@@ -55,9 +57,22 @@ export function setCurrentUserData(userInfo) {
   };
 }
 export function updateUser(userInfo) {
-  console.log(userInfo, "action");
   return {
     type: UPDATE_USER,
     userInfo,
+  };
+}
+
+export function updateUserSuccess({ message }) {
+  return {
+    type: UPDATE_USER_SUCCESS,
+    message,
+  };
+}
+
+export function updateUserError(message) {
+  return {
+    type: UPDATE_USER_ERROR,
+    message,
   };
 }
