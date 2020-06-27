@@ -1,14 +1,8 @@
 import * as Yup from "yup";
-const yupRequired = (text) => {
-  return Yup.string().required(`${text} is required`);
-};
-const yupRequiredNumber = (text) => {
-  return Yup.number().required(`${text} is required`);
-};
+
+import { yupRequired, yupRequiredNumber } from "../../helpers/helpers";
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/; // for Mobile Numbers
-
-// export const updateValidations = Yup.object().shape({
 
 export const updateValidations = Yup.object().shape({
   firstName: yupRequired("First Name")

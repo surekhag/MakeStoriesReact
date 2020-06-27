@@ -69,6 +69,7 @@ const tableStyle = (theme) => ({
     verticalAlign: "middle",
   },
   tableBodyRow: {
+    ...defaultFont,
     height: "48px",
     color: "inherit",
     display: "table-row",

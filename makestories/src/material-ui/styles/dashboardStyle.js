@@ -8,6 +8,10 @@ import {
 } from "./material-dashboard-react";
 
 const dashboardStyle = {
+  boldText: {
+    fontWeight: "bold",
+    font: "inherit",
+  },
   profile: {
     width: "100%",
     alignItems: "flex-start",
