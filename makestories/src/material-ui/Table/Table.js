@@ -1,34 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
-// @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-// import { formatDateDDMMYYYY } from "../../helpers/formatDates";
-// core components
-// import Button from "../../components/CustomButtons/Button";
 import styles from "../styles/tableStyle";
 
 const useStyles = makeStyles(styles);
 
 export default function CustomTable(props) {
   const classes = useStyles();
-  const {
-    tableHead,
-    tableData,
-    tableHeaderColor,
-    showLink,
-    buttonText,
-    detailHandler,
-    addLinks,
-    updateUser,
-    deleteUser,
-    allocateProject,
-    deallocateProject,
-  } = props;
+  const { tableHead, tableData, tableHeaderColor } = props;
   return (
     <div className={classes.tableResponsive}>
       {tableData ? (
@@ -48,7 +32,6 @@ export default function CustomTable(props) {
                     </TableCell>
                   );
                 })}
-                {showLink || addLinks ? <TableCell /> : null}
               </TableRow>
             </TableHead>
           ) : null}
@@ -57,10 +40,6 @@ export default function CustomTable(props) {
               return (
                 <TableRow key={k} className={classes.tableBodyRow}>
                   {prop.map((prop, key) => {
-                    // This is only for deallocation of project where need _id in data but need not to show in UI.
-                    if (deallocateProject && key == 5) {
-                      return;
-                    }
                     return (
                       <TableCell className={classes.tableCell} key={key}>
                         {prop}

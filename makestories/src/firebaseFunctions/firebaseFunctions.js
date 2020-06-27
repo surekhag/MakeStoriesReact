@@ -87,7 +87,6 @@ export async function submitDataWithImage(
   dispatch,
   updateUser,
   setUpdatedImage,
-  updatedUser,
   addNewUser,
   userToUpdate
 ) {

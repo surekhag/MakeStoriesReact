@@ -70,6 +70,12 @@ const Home = (props) => {
   const logout = () => {
     dispatch(signOutFromSite());
   };
+  const bgImage = {
+    backgroundImage: `url(${defaultImage})`,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+  };
   return (
     <>
       {redirect ? <Redirect to="/login" /> : null}
@@ -85,8 +91,19 @@ const Home = (props) => {
           <div className={classes.paper}>
             <GridItem xs={12} sm={12} md={12}>
               <div className={classes.profile}>
-                <GridItem xs={3} sm={3} md={3}>
+                <div className={classes.logoutStyles}>
+                  <Button
+                    className={classes.logoutButton}
+                    onClick={logout}
+                    variant="contained"
+                    color="  "
+                  >
+                    LOGOUT
+                  </Button>
+                </div>
+                <GridItem xs={12} sm={3} md={3}>
                   <img
+                    style={bgImage}
                     className={classes.imageContainer}
                     src={photoURL ? photoURL : defaultImage}
                     alt=""
@@ -114,9 +131,9 @@ const Home = (props) => {
                 <Button onClick={editUser} variant="contained" color="primary">
                   Edit USER
                 </Button>
-                <Button onClick={logout} variant="contained" color="primary">
+                {/* <Button onClick={logout} variant="contained" color="primary">
                   LOGOUT
-                </Button>
+                </Button> */}
               </div>
             </GridItem>
           </div>

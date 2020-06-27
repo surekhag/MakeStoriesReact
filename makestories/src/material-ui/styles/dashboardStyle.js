@@ -4,6 +4,7 @@ import {
   grayColor,
   primaryColor,
   hexToRgb,
+  blackColor,
 } from "./material-dashboard-react";
 
 const dashboardStyle = {
@@ -32,12 +33,13 @@ const dashboardStyle = {
   },
   headSection: {},
   imageContainer: {
-    // borderRight: "3px solid grey",
-    width: "200px",
-    height: "200px",
+    minWidth: "200px",
+    minHeight: "200px",
+    maxWidth: "200px",
+    maxHeight: "200px",
     borderRadius: "50%",
     overflow: "hidden",
-    // display: "flex",
+    marginBottom: "10px",
   },
   upArrowCardCategory: {
     width: "16px",
@@ -78,6 +80,24 @@ const dashboardStyle = {
     fontSize: "14px",
     marginTop: "0",
     marginBottom: "0",
+  },
+  logoutStyles: {
+    float: "right",
+  },
+  logoutButton: {
+    color: blackColor,
+    boxShadow: "none",
+    backgroundColor: "transparent",
+    paddingRight: "0",
+    paddingLeft: "60px",
+    fontWeight: "bold",
+    "&:hover": {
+      textDecoration: "underline",
+      boxShadow: "none",
+      backgroundColor: "transparent",
+
+      color: blackColor,
+    },
   },
   cardTitle: {
     color: primaryColor[2],
