@@ -21,6 +21,7 @@ import {
   addUserSelector,
   currentUserSelector,
 } from "../../selectors/selectors";
+import Loader from "react-loader-spinner";
 import { Link, Redirect } from "react-router-dom";
 import signInSignUp from "../../material-ui/styles/signInSignUp";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -46,6 +47,8 @@ const Register = (props) => {
   const { addToast } = useToasts();
   const dispatch = useDispatch();
   const [user, setUser] = useState(null);
+  const [isLoading, setLoading] = useState(false);
+
   const [updatedUser, setUpdatedUser] = useState(null);
   let { userToUpdate } = props.location.state || {};
 
@@ -92,6 +95,7 @@ const Register = (props) => {
       dispatch(clearUserMessages());
       updatedUser.photoURL = updatedImage;
       setUser(updatedUser);
+      setLoading(false);
     }
   }, [
     updateSuccess,
@@ -109,6 +113,7 @@ const Register = (props) => {
         autoDismiss: true,
       });
       dispatch(clearUserMessages());
+      setLoading(false);
     }
   }, [updateError, addToast, dispatch]);
 
@@ -119,6 +124,7 @@ const Register = (props) => {
         appearance: "success",
         autoDismiss: true,
       });
+      setLoading(false);
     }
   }, [currentUser, addToast, userToUpdate]);
 
@@ -129,10 +135,12 @@ const Register = (props) => {
         autoDismiss: true,
       });
       dispatch(clearUserMessages());
+      setLoading(false);
     }
   }, [addUserError, addToast, dispatch]);
 
   const submitFormValues = (values) => {
+    setLoading(true);
     if (userToUpdate) {
       setUpdatedUser(values);
       if (values.password && values.password.length < 8) {
@@ -148,6 +156,7 @@ const Register = (props) => {
       console.log("obj empty", val);
       if (val) {
         setUser(userToUpdate);
+        setLoading(false);
       } else {
         if (finalValues.photoURL) {
           //Submit data with updated image
@@ -159,8 +168,10 @@ const Register = (props) => {
             addNewUser,
             userToUpdate
           );
+          setLoading(true);
         } else {
           setUpdatedUser(values);
+          setLoading(true);
           dispatch(updateUser(finalValues));
         }
       }
@@ -175,8 +186,10 @@ const Register = (props) => {
           addNewUser,
           userToUpdate
         );
+        setLoading(true);
       } else {
         dispatch(addNewUser(values));
+        setLoading(true);
       }
     }
   };
@@ -202,9 +215,18 @@ const Register = (props) => {
         <Container component="main" maxWidth="md">
           <CssBaseline />
           <div className={classes.paper}>
+            <Loader
+              type="Oval"
+              color="#00BFFF"
+              height={30}
+              width={30}
+              style={{ display: isLoading ? "block" : "none" }}
+            />
+
             <Avatar className={classes.avatar}>
               <LockOutlinedIcon />
             </Avatar>
+
             <Typography component="h1" variant="h5">
               {userToUpdate ? "Update User" : "Sign Up"}
             </Typography>

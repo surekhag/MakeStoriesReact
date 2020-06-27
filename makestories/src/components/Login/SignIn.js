@@ -13,6 +13,8 @@ import { getUserDataFromDb } from "../../firebaseFunctions/firebaseFunctions";
 import GridItem from "../../material-ui/Grid/GridItem";
 import GridContainer from "../../material-ui/Grid/GridContainer";
 import InputFields from "../../material-ui/FromComponents/InputFields";
+
+import Loader from "react-loader-spinner";
 import { Link, Redirect } from "react-router-dom";
 import Copyright from "../Copyright/copyright";
 import { useToasts } from "react-toast-notifications";
@@ -30,6 +32,8 @@ const SignIn = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [currentUser, setCurrentUser] = useState(null);
+  const [isLoading, setLoading] = useState(false);
+
   const currentUserData = useSelector(currentUserSelector);
   const loginError = useSelector(loginErrroSelector);
   const { addToast } = useToasts();
@@ -42,9 +46,10 @@ const SignIn = (props) => {
           autoDismiss: true,
         });
         setCurrentUser(currentUserData);
+        // setLoading(false);
       }
       if (Object.keys(currentUserData).length === 2) {
-        getUserDataFromDb(setCurrentUser, currentUserData);
+        getUserDataFromDb(setCurrentUser, currentUserData, setLoading);
       }
     }
   }, [currentUserData, addToast, dispatch]);
@@ -56,11 +61,13 @@ const SignIn = (props) => {
         autoDismiss: true,
       });
       dispatch(clearMessages(null));
+      setLoading(false);
     }
   }, [loginError, addToast, dispatch]);
 
   const submitFormValues = (values) => {
     dispatch(loginToSite(values));
+    setLoading(true);
   };
   return (
     <>
@@ -75,6 +82,13 @@ const SignIn = (props) => {
         <Container component="main" maxWidth="xs">
           <CssBaseline />
           <div className={classes.paper}>
+            <Loader
+              type="Oval"
+              color="#00BFFF"
+              height={30}
+              width={30}
+              style={{ display: isLoading ? "block" : "none" }}
+            />
             <Avatar className={classes.avatar}>
               <LockOutlinedIcon />
             </Avatar>

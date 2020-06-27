@@ -73,12 +73,17 @@ export const doEmailUpdate = (email) => {
   auth.currentUser.updateEmail(email);
 };
 
-export const getUserDataFromDb = (setCurrentUser, currentUserData) => {
+export const getUserDataFromDb = (
+  setCurrentUser,
+  currentUserData,
+  setLoading
+) => {
   const user = auth.currentUser;
   const userRef = db.ref("/users/" + user.uid);
   userRef.on("value", (snapshot) => {
     const data = snapshot.val();
     setCurrentUser({ ...data, ...currentUserData });
+    setLoading(false);
   });
 };
 
