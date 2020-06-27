@@ -1,12 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { ErrorMessage } from "formik";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import GridContainer from "../../material-ui/Grid/GridContainer";
 import GridItem from "../../material-ui/Grid/GridItem";
 import Avatar from "@material-ui/core/Avatar";
 import Card from "../../material-ui/Card/Card";
-// import CardHeader from "../../material-ui//Card/CardHeader";
 import CardBody from "../../material-ui/Card/CardBody";
 import CardFooter from "../../material-ui/Card/CardFooter";
 import Button from "../../material-ui/CustomButtons/Button";
@@ -17,6 +15,12 @@ import {
   userInputListUpdate,
   getFinalDataForUpdate,
 } from "./formData";
+import {
+  updateErrSelector,
+  updateSuceessSelector,
+  addUserSelector,
+  currentUserSelector,
+} from "../../selectors/selectors";
 import { Link, Redirect } from "react-router-dom";
 import signInSignUp from "../../material-ui/styles/signInSignUp";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -25,8 +29,8 @@ import Container from "@material-ui/core/Container";
 import InputFields from "../../material-ui/FromComponents/InputFields";
 import { useToasts } from "react-toast-notifications";
 import { Formik, Form } from "formik";
-import { db, auth, fStore } from "../../services/Firebase/firebase";
 import { useSelector, useDispatch } from "react-redux";
+import { submitDataWithImage } from "../../firebaseFunctions/firebaseFunctions";
 import {
   updateUser,
   addNewUser,
@@ -69,31 +73,34 @@ const Register = (props) => {
   };
 
   const [updatedImage, setUpdatedImage] = useState(photoURL);
-  const currentUser = useSelector((state) => state.loginReducer.currentUser);
-  const addUserError = useSelector((state) => state.userReducer.addUserError);
-  const updateSuccess = useSelector(
-    (state) => state.userReducer.updateUserSuccess
-  );
-  const updateError = useSelector((state) => state.userReducer.updateUserError);
+  const currentUser = useSelector(currentUserSelector);
+  const addUserError = useSelector(addUserSelector);
+  const updateSuccess = useSelector(updateSuceessSelector);
+  const updateError = useSelector(updateErrSelector);
   const userForm = useRef(null);
 
   useEffect(() => {
     if (!userToUpdate) dispatch(setCurrentUserData());
-  }, []);
+  }, [dispatch, userToUpdate]);
 
   useEffect(() => {
     if (updateSuccess && userToUpdate) {
-      // setUser(updateSuccess);
       addToast(updateSuccess, {
         appearance: "success",
         autoDismiss: true,
       });
       dispatch(clearUserMessages());
-      console.log("userForm ", updatedImage, updatedUser);
       updatedUser.photoURL = updatedImage;
       setUser(updatedUser);
     }
-  }, [updateSuccess, addToast]);
+  }, [
+    updateSuccess,
+    addToast,
+    dispatch,
+    updatedUser,
+    updatedImage,
+    userToUpdate,
+  ]);
 
   useEffect(() => {
     if (updateError) {
@@ -106,7 +113,6 @@ const Register = (props) => {
   }, [updateError, addToast, dispatch]);
 
   useEffect(() => {
-    // console.log("currentUser0", currentUser);
     if (currentUser && !userToUpdate) {
       setUser(currentUser);
       addToast("User has been registered successfully!", {
@@ -114,7 +120,7 @@ const Register = (props) => {
         autoDismiss: true,
       });
     }
-  }, [currentUser, addToast]);
+  }, [currentUser, addToast, userToUpdate]);
 
   useEffect(() => {
     if (addUserError) {
@@ -126,43 +132,7 @@ const Register = (props) => {
     }
   }, [addUserError, addToast, dispatch]);
 
-  async function getImageUrl(image) {
-    const uploadTask = fStore
-      .ref(`/images/${image.photoURL.name}`)
-      .put(image.photoURL);
-    let firebaseImage;
-    await uploadTask.on(
-      "state_changed",
-      (snapShot) => {
-        console.log(snapShot);
-      },
-      (err) => {
-        console.log(err);
-      },
-      () => {
-        fStore
-          .ref("images")
-          .child(image.photoURL.name)
-          .getDownloadURL()
-          .then((fireBaseUrl) => {
-            image.photoURL = fireBaseUrl;
-            console.log("inside save", image);
-            if (userToUpdate) {
-              dispatch(updateUser(image));
-              console.log("update user data no image info", updatedUser);
-              // setUpdatedUser
-              setUpdatedImage(fireBaseUrl);
-            } else {
-              dispatch(addNewUser(image));
-            }
-          });
-      }
-    );
-  }
-
   const submitFormValues = (values) => {
-    console.log("submitted values", userToUpdate, values);
-    let imageUrl = null;
     if (userToUpdate) {
       setUpdatedUser(values);
       if (values.password && values.password.length < 8) {
@@ -177,32 +147,37 @@ const Register = (props) => {
       const val = Object.keys(finalValues).length === 0;
       console.log("obj empty", val);
       if (val) {
-        console.log("updatedata");
         setUser(userToUpdate);
       } else {
-        console.log("yes   data for update", finalValues);
-        // console.log(finalValues.photoURL, "ptoto");
-
         if (finalValues.photoURL) {
-          console.log("yes   data for update with image ");
-          getImageUrl(finalValues);
+          //Submit data with updated image
+          submitDataWithImage(
+            finalValues,
+            dispatch,
+            updateUser,
+            setUpdatedImage,
+            addNewUser,
+            userToUpdate
+          );
         } else {
-          console.log("yes   data for update with no  image ");
           setUpdatedUser(values);
           dispatch(updateUser(finalValues));
         }
       }
     } else {
       if (values.photoURL) {
-        console.log(" new user with image updates ");
-        imageUrl = getImageUrl(values);
-        console.log(imageUrl, "imageUrl");
+        //New user with image
+        submitDataWithImage(
+          values,
+          dispatch,
+          updateUser,
+          setUpdatedImage,
+          addNewUser,
+          userToUpdate
+        );
       } else {
-        console.log("New user with no image");
         dispatch(addNewUser(values));
       }
-
-      // dispatch(addNewUser(values));
     }
   };
 
@@ -261,25 +236,16 @@ const Register = (props) => {
                               <div>
                                 <input
                                   accept="image/*"
-                                  // style={{ display: "none" }}
                                   id="raised-button-file"
                                   type="file"
                                   name="photoURL"
                                   onChange={(event) => {
-                                    // setFile(event.currentTarget.files[0]);
                                     setFieldValue(
                                       "photoURL",
                                       event.currentTarget.files[0]
                                     );
                                   }}
                                 />
-                                {/* <img src={photoURL ? photoURL : null} /> */}
-
-                                {/* <ErrorMessage
-                                  className={classes.colorRed}
-                                  name={"photoURL"}
-                                  component="div"
-                                /> */}
                               </div>
                             </div>
                           </GridContainer>

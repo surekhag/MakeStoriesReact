@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useDispatch, useSelector } from "react-redux";
-
+import { getUserDataFromDb } from "../../firebaseFunctions/firebaseFunctions";
 import GridItem from "../../material-ui/Grid/GridItem";
 import GridContainer from "../../material-ui/Grid/GridContainer";
 import InputFields from "../../material-ui/FromComponents/InputFields";
@@ -17,19 +17,21 @@ import { Link, Redirect } from "react-router-dom";
 import Copyright from "../Copyright/copyright";
 import { useToasts } from "react-toast-notifications";
 import { loginToSite, clearMessages } from "../../actions/userActions";
-import { db, auth } from "../../services/Firebase/firebase";
 import { initialValues, userInputList, dataValidation } from "./formValues";
 import { Formik, Form } from "formik";
+import {
+  loginErrroSelector,
+  currentUserSelector,
+} from "../../selectors/selectors";
+
 const useStyles = makeStyles((theme) => signInSignUp(theme));
 
 const SignIn = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [currentUser, setCurrentUser] = useState(null);
-  const currentUserData = useSelector(
-    (state) => state.loginReducer.currentUser
-  );
-  const loginError = useSelector((state) => state.loginReducer.loginError);
+  const currentUserData = useSelector(currentUserSelector);
+  const loginError = useSelector(loginErrroSelector);
   const { addToast } = useToasts();
 
   useEffect(() => {
@@ -42,12 +44,7 @@ const SignIn = (props) => {
         setCurrentUser(currentUserData);
       }
       if (Object.keys(currentUserData).length === 2) {
-        const user = auth.currentUser;
-        const userRef = db.ref("/users/" + user.uid);
-        userRef.on("value", (snapshot) => {
-          const data = snapshot.val();
-          setCurrentUser({ ...data, ...currentUserData });
-        });
+        getUserDataFromDb(setCurrentUser, currentUserData);
       }
     }
   }, [currentUserData, addToast, dispatch]);
@@ -122,7 +119,7 @@ const SignIn = (props) => {
                     </Button>
                   </div>
                   <div className={classes.alignLink}>
-                    Don't have an Account?{" "}
+                    Don't have an Account?
                     <Link className={classes.handleAnchor} to="/register">
                       Sign Up
                     </Link>

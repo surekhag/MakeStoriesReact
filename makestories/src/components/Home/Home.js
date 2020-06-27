@@ -17,17 +17,18 @@ import defaultImage from "../../assets/images/default-user-image.png";
 import { clearMessages } from "../../actions/userActions";
 
 import { useToasts } from "react-toast-notifications";
+import { signOutSelector } from "../../selectors/selectors";
 const useStyles = makeStyles(styles);
 
 const Home = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const signOut = useSelector((state) => state.loginReducer.signOutSuccess);
+  const signOut = useSelector(signOutSelector);
   const data = props.location.state.data;
-  console.log("inside home", data);
   const [redirect, setRedirect] = useState(false);
   const [user, setUser] = useState(null);
   const { addToast } = useToasts();
+
   useEffect(() => {
     if (signOut) {
       addToast(signOut, {
@@ -37,7 +38,8 @@ const Home = (props) => {
       dispatch(clearMessages());
       setRedirect(true);
     }
-  }, [signOut, dispatch]);
+  }, [signOut, dispatch, addToast]);
+
   const {
     firstName,
     lastName,
@@ -66,7 +68,6 @@ const Home = (props) => {
     setUser(data);
   };
   const logout = () => {
-    console.log("click log");
     dispatch(signOutFromSite());
   };
   return (
@@ -87,18 +88,10 @@ const Home = (props) => {
                 <GridItem xs={3} sm={3} md={3}>
                   <img
                     className={classes.imageContainer}
-                    src={
-                      // photoURL ? URL.createObjectURL(photoURL) : defaultImage
-                      photoURL ? photoURL : defaultImage
-                    }
+                    src={photoURL ? photoURL : defaultImage}
                     alt=""
                   />
                 </GridItem>
-                {/* <GridItem xs={9} sm={9} md={9}>
-                  <Typography component="h1" variant="h5">
-                    User Profile
-                  </Typography>
-                </GridItem> */}
               </div>
               <Typography component="h1" variant="h5">
                 User Profile

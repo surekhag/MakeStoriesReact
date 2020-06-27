@@ -15,12 +15,10 @@ export function signup(userInfo) {
   } = userInfo;
   // const imageUrl = photoURL;
   let user = null;
-  let finalImageUrl = null;
   return auth
     .createUserWithEmailAndPassword(email, password)
     .then(function () {
       user = auth.currentUser;
-      console.log("current user", user);
     })
     .then(() => {
       if (photoURL) {
@@ -55,13 +53,11 @@ export function signin(email, password) {
 
 export async function updateDetails(userInfo) {
   const user = auth.currentUser;
-  console.log("auth ", user.uid, userInfo);
-  console.log("inside update data fun ", userInfo);
   await db
     .ref("/users/" + user.uid)
     .update(userInfo)
     .then(() => {
-      console.log("update complete");
+      // console.log("update complete");
     });
 }
 
@@ -71,10 +67,55 @@ export const doSignOut = () => {
 
 export const doPasswordUpdate = (password) => {
   auth.currentUser.updatePassword(password);
-  console.log("pass update complte");
 };
 
 export const doEmailUpdate = (email) => {
   auth.currentUser.updateEmail(email);
-  console.log("email update complte");
 };
+
+export const getUserDataFromDb = (setCurrentUser, currentUserData) => {
+  const user = auth.currentUser;
+  const userRef = db.ref("/users/" + user.uid);
+  userRef.on("value", (snapshot) => {
+    const data = snapshot.val();
+    setCurrentUser({ ...data, ...currentUserData });
+  });
+};
+
+export async function submitDataWithImage(
+  image,
+  dispatch,
+  updateUser,
+  setUpdatedImage,
+  updatedUser,
+  addNewUser,
+  userToUpdate
+) {
+  const uploadTask = fStore
+    .ref(`/images/${image.photoURL.name}`)
+    .put(image.photoURL);
+  await uploadTask.on(
+    "state_changed",
+    (snapShot) => {
+      console.log(snapShot);
+    },
+    (err) => {
+      console.log(err);
+    },
+    () => {
+      fStore
+        .ref("images")
+        .child(image.photoURL.name)
+        .getDownloadURL()
+        .then((fireBaseUrl) => {
+          image.photoURL = fireBaseUrl;
+          if (userToUpdate) {
+            dispatch(updateUser(image));
+            setUpdatedImage(fireBaseUrl);
+          } else {
+            dispatch(addNewUser(image));
+          }
+        });
+    }
+  );
+}
