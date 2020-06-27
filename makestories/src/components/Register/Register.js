@@ -254,22 +254,24 @@ const Register = (props) => {
                         <CardFooter>
                           {userToUpdate ? (
                             <>
-                              <GridItem xs={12} sm={12} md={6}>
-                                <Button
-                                  id="update"
-                                  type="submit"
-                                  color="primary"
-                                  disabled={isSubmitting}
-                                >
-                                  UPDATE USER
-                                </Button>
-                                <Button
-                                  color="primary"
-                                  disabled={isSubmitting}
-                                  onClick={() => handleCancelActivity()}
-                                >
-                                  BACK TO HOME
-                                </Button>
+                              <GridItem xs={12} sm={12} md={12}>
+                                <div className={classes.alignLink}>
+                                  <Button
+                                    id="update"
+                                    type="submit"
+                                    color="primary"
+                                    disabled={isSubmitting}
+                                  >
+                                    UPDATE USER
+                                  </Button>
+                                  <Button
+                                    color="primary"
+                                    disabled={isSubmitting}
+                                    onClick={() => handleCancelActivity()}
+                                  >
+                                    BACK TO HOME
+                                  </Button>
+                                </div>
                               </GridItem>
                             </>
                           ) : (

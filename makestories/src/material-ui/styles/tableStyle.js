@@ -55,6 +55,7 @@ const tableStyle = (theme) => ({
     verticalAlign: "middle",
     fontSize: "0.8125rem",
   },
+
   tableResponsive: {
     width: "100%",
     marginTop: 0,

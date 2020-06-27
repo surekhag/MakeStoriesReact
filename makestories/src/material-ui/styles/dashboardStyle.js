@@ -11,8 +11,7 @@ const dashboardStyle = {
   profile: {
     width: "100%",
     alignItems: "flex-start",
-    paddingBottom: "10px",
-    marginTop: "40px",
+    paddingBottom: "5px",
   },
   stylesForButton: {
     width: "30%",
@@ -22,7 +21,7 @@ const dashboardStyle = {
     justifyContent: "center",
   },
   paper: {
-    marginTop: "40px",
+    marginTop: "30px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -84,6 +83,11 @@ const dashboardStyle = {
   logoutStyles: {
     float: "right",
   },
+  avatar: {
+    backgroundColor: "#f50057",
+    margin: "8px auto",
+  },
+
   logoutButton: {
     color: blackColor,
     boxShadow: "none",

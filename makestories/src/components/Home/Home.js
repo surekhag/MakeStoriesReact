@@ -3,6 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import GridItem from "../../material-ui/Grid/GridItem";
 import GridContainer from "../../material-ui/Grid/GridContainer";
 import Button from "../../material-ui/CustomButtons/Button";
+
+import Avatar from "@material-ui/core/Avatar";
 import Card from "../../material-ui/Card/Card";
 import CardHeader from "../../material-ui/Card/CardHeader";
 import CardBody from "../../material-ui/Card/CardBody";
@@ -15,7 +17,7 @@ import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import defaultImage from "../../assets/images/default-user-image.png";
 import { clearMessages } from "../../actions/userActions";
-
+import AccountCircleSharpIcon from "@material-ui/icons/AccountCircleSharp";
 import { useToasts } from "react-toast-notifications";
 import { signOutSelector } from "../../selectors/selectors";
 const useStyles = makeStyles(styles);
@@ -110,6 +112,9 @@ const Home = (props) => {
                   />
                 </GridItem>
               </div>
+              <Avatar className={classes.avatar}>
+                <AccountCircleSharpIcon />
+              </Avatar>
               <Typography component="h1" variant="h5">
                 User Profile
               </Typography>
@@ -131,9 +136,6 @@ const Home = (props) => {
                 <Button onClick={editUser} variant="contained" color="primary">
                   Edit USER
                 </Button>
-                {/* <Button onClick={logout} variant="contained" color="primary">
-                  LOGOUT
-                </Button> */}
               </div>
             </GridItem>
           </div>
